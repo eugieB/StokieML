@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+require('dotenv').config()
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // connect to MongoDB Atlas
-mongoose.connect('<your_mongodb_atlas_uri>', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://eugenettb:aB#2b%Cfgj.unQR@cluster0.dyk5q.mongodb.net/stokiedb1?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
 
@@ -103,29 +103,3 @@ app.post('/login', (req, res) => {
   User.findOne({ email: email }, (err, user) => {
     if (err) {
       return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    if (!user) {
-      return res.status(401).json({ error: 'Authentication failed' });
-    }
-
-    // compare the user's password with the hashed password in the database
-    bcrypt.compare(password, user.password, function (err, result) {
-      if (err) {
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-
-      if (!result) {
-        return res.status(401).json({ error: 'Authentication failed' });
-      }
-
-      return res.status(200).json({ message: 'Authentication successful' });
-    });
-  });
-});
-
-// start the server
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
-});
-
