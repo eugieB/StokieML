@@ -1,91 +1,38 @@
+// Require the necessary modules
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
+// Create an instance of Express
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+// Set up middleware
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/<database-name>?retryWrites=true&w=majority', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-});
-
-const User = mongoose.model('User', userSchema);
-
-// Route to create a new user
-app.post('/api/users', async (req, res) => {
-  const { name, email, password } = req.body;
-
-  const user = new User({
-    name,
-    email,
-    password,
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB Atlas!');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB Atlas:', error);
   });
 
-  try {
-    await user.save();
-    res.send(user);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+// Define the routes
+app.get('/', (req, res) => {
+  res.send('Welcome to the homepage!');
 });
 
-// Route to get all users
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await User.find();
-    res.send(users);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+app.post('/register', (req, res) => {
+  // Handle registration logic
 });
 
-// Route to get a specific user by ID
-app.get('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await User.findById(id);
-    res.send(user);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+app.post('/login', (req, res) => {
+  // Handle login logic
 });
 
-// Route to update a user by ID
-app.put('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
-
-  try {
-    const user = await User.findById(id);
-
-    user.name = name || user.name;
-    user.email = email || user.email;
-    user.password = password || user.password;
-
-    await user.save();
-    res.send(user);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
-
-// Route to delete a user by ID
-app.delete('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    await User.findByIdAndDelete(id);
-    res.send({ message: 'User deleted successfully' });
-  } catch (err) {
