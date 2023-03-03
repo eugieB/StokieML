@@ -82,6 +82,20 @@
 <p>Take the first step towards securing your financial future and join our club today.</p>
 <a href="#" class="btn-primary">Join Now</a>
 </section>
+<form action="/payment" method="POST">
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX" // your publishable key from Stripe
+    data-amount="1000" // the amount to be charged in cents
+    data-name="My Company"
+    data-description="A description of the payment"
+    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+    data-locale="auto"
+    data-currency="usd">
+  </script>
+</form>
+
+
 <footer>
 <div class="footer-content">
 <div class="logo">
